@@ -1,6 +1,6 @@
 import "./App.css";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const fetchPokemon = () => {
   return axios.get("https://pokeapi.co/api/v2/pokemon");
@@ -22,7 +22,7 @@ const PokemonList = () => {
 
   if (pokemonQuery.isError) {
     if (
-      pokemonQuery.error.name === "AxiosError" &&
+      pokemonQuery.error instanceof AxiosError &&
       pokemonQuery.error.response.status === 404
     ) {
       return <div>Not Found</div>;

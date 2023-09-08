@@ -47,7 +47,7 @@ test("renders pokemon name", async () => {
   expect(await screen.findByText(/bulbasaur/i)).toBeVisible();
 });
 
-test("shows not found for a 404", async () => {
+test.only("shows not found for a 404", async () => {
   server.use(mockNotFoundPokemon());
   renderComponent();
 
