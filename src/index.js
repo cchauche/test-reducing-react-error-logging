@@ -6,10 +6,10 @@ import reportWebVitals from "./reportWebVitals";
 import {
   Route,
   RouterProvider,
-  Routes,
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -17,10 +17,16 @@ const router = createBrowserRouter(
   )
 );
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 0, retry: 0 } },
+});
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </React.StrictMode>
 );
 
