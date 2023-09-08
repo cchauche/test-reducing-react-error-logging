@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -21,7 +20,15 @@ const PokemonList = () => {
     queryFn: fetchPokemon,
   });
 
-  if (pokemonQuery.isError) throw pokemonQuery.error;
+  if (pokemonQuery.isError) {
+    if (
+      pokemonQuery.error.name === "AxiosError" &&
+      pokemonQuery.error.response.status === 404
+    ) {
+      return <div>Not Found</div>;
+    }
+    throw pokemonQuery.error;
+  }
 
   if (!pokemonQuery.isFetched && !pokemonQuery.data) {
     return <div>Loading...</div>;
@@ -30,7 +37,7 @@ const PokemonList = () => {
   return (
     <ul>
       {pokemonQuery.data.data.results.map((p) => (
-        <li>{p.name}</li>
+        <li key={p.name}>{p.name}</li>
       ))}
     </ul>
   );
