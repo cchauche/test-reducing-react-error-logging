@@ -108,11 +108,12 @@ describe("Example of silencing all errors", () => {
     renderWithRouter();
 
     expect(await screen.findByText(/error/i)).toBeVisible();
-    expect(errorSpy).toHaveBeenCalledTimes(4);
-    // 4 errors expected:
-    //   1: jsdom logs the uncaught error, thrown to trigger error boundary
-    //   2: React logs the uncaught error again and then...
-    //   3: React logs that the above error occurred in X component
-    //   4: react-router throws that it's error boundary caught an error
+    expect(errorSpy).toHaveBeenCalledTimes(5);
+    // 5 errors expected:
+    //   1: react-query logs the 500 request error
+    //   2: jsdom logs the uncaught error, thrown to trigger error boundary
+    //   3: React logs the uncaught error again and then...
+    //   4: React logs that the above error occurred in X component
+    //   5: react-router throws that it's error boundary caught an error
   });
 });

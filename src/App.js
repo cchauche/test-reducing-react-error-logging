@@ -2,8 +2,10 @@ import "./App.css";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 
-const fetchPokemon = () => {
-  return axios.get("https://pokeapi.co/api/v2/pokemon");
+const fetchPokemon = async () => {
+  // throw new Error("An error");
+  const response = await axios.get("https://pokeapi.co/api/v2/pokemon");
+  return response;
 };
 
 function App() {

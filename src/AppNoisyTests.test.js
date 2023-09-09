@@ -14,12 +14,30 @@ import {
   createMemoryRouter,
 } from "react-router-dom";
 import { routes } from "./routes";
+import { AxiosError } from "axios";
+
+const queryClient = new QueryClient({
+  logger: {
+    log: console.log,
+    warn: console.warn,
+    error: (error) => {
+      if (error instanceof AxiosError) {
+        return;
+      } else if (
+        typeof error === "string" &&
+        error.match(
+          "Passing a custom logger has been deprecated and will be removed in the next major version."
+        )
+      ) {
+        return;
+      }
+      throw error;
+    },
+  },
+  defaultOptions: { queries: { retry: 0 } },
+});
 
 const renderComponent = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: 0 } },
-  });
-
   return render(
     <QueryClientProvider client={queryClient}>
       <App />
@@ -29,9 +47,6 @@ const renderComponent = () => {
 
 const renderWithRouter = () => {
   const router = createMemoryRouter(routes, { initialEntries: ["/"] });
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: 0 } },
-  });
 
   return render(
     <QueryClientProvider client={queryClient}>
@@ -39,6 +54,25 @@ const renderWithRouter = () => {
     </QueryClientProvider>
   );
 };
+
+let expectedErrors = 0;
+let actualErrors = 0;
+function onError(e) {
+  e.preventDefault();
+  actualErrors++;
+}
+
+beforeEach(() => {
+  expectedErrors = 0;
+  actualErrors = 0;
+  window.addEventListener("error", onError);
+});
+
+afterEach(() => {
+  window.removeEventListener("error", onError);
+  expect(actualErrors).toBe(expectedErrors);
+  expectedErrors = 0;
+});
 
 test("renders pokemon name", async () => {
   server.use(mockPokemon());
