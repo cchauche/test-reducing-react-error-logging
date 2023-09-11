@@ -47,6 +47,8 @@ test("renders pokemon name", async () => {
   expect(await screen.findByText(/bulbasaur/i)).toBeVisible();
 });
 
+// This test throws an error, but react-query-v5 doesn't log errors anymore. Run
+// this test by itself and there will be no error output
 test("shows not found for a 404", async () => {
   server.use(mockNotFoundPokemon());
   renderComponent();
@@ -54,9 +56,33 @@ test("shows not found for a 404", async () => {
   expect(await screen.findByText(/not found/i)).toBeVisible();
 });
 
-test("shows error for unexpected errors", async () => {
-  server.use(mockBadPokemon());
-  renderWithRouter();
+describe("Tests that purposely throw uncaught errors to an error boundary", () => {
+  let expectedErrors = 0;
+  let actualErrors = 0;
+  function onError(e) {
+    e.preventDefault();
+    actualErrors++;
+  }
 
-  expect(await screen.findByText(/error/i)).toBeVisible();
+  beforeEach(() => {
+    expectedErrors = 0;
+    actualErrors = 0;
+    window.addEventListener("error", onError);
+  });
+
+  afterEach(() => {
+    window.removeEventListener("error", onError);
+    expect(actualErrors).toBe(expectedErrors);
+    expectedErrors = 0;
+  });
+
+  // This test has silenced the React Uncaught Error messages but React Router
+  // still logs the error caught by the error boundary.
+  test("shows error for unexpected errors", async () => {
+    expectedErrors = 2;
+    server.use(mockBadPokemon());
+    renderWithRouter();
+
+    expect(await screen.findByText(/error/i)).toBeVisible();
+  });
 });
