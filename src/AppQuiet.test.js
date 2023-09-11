@@ -103,7 +103,7 @@ describe("Example of silencing all errors", () => {
   // Asserting on the number of expected errors can help surface when there is
   // an unexpected error is thrown.
   test("shows error for unexpected errors", async () => {
-    errorSpy.mockImplementation((e) => console.log(e));
+    errorSpy.mockImplementation(() => null);
     server.use(mockBadPokemon());
     renderWithRouter();
 
