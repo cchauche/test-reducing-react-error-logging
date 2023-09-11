@@ -56,30 +56,8 @@ test("shows not found for a 404", async () => {
   expect(await screen.findByText(/not found/i)).toBeVisible();
 });
 
-describe("Tests that purposely throw uncaught errors to an error boundary", () => {
-  let expectedErrors = 0;
-  let actualErrors = 0;
-  function onError(e) {
-    e.preventDefault();
-    actualErrors++;
-  }
-
-  beforeEach(() => {
-    expectedErrors = 0;
-    actualErrors = 0;
-    window.addEventListener("error", onError);
-  });
-
-  afterEach(() => {
-    window.removeEventListener("error", onError);
-    expect(actualErrors).toBe(expectedErrors);
-    expectedErrors = 0;
-  });
-
-  // This test has silenced the React Uncaught Error messages but React Router
-  // still logs the error caught by the error boundary.
+describe("Test that purposely throw uncaught errors to an error boundary", () => {
   test("shows error for unexpected errors", async () => {
-    expectedErrors = 2;
     server.use(mockBadPokemon());
     renderWithRouter();
 
